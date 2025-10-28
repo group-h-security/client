@@ -1,3 +1,12 @@
+certs/
+*.jks
+*.pem
+*.p12
+*.crt
+*.key
+*.csr
+*.srl
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
