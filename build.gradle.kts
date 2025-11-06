@@ -18,3 +18,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.register("temp") {
+
+}
