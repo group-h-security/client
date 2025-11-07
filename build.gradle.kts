@@ -1,5 +1,10 @@
 plugins {
-    id("java")
+    java
+    application
+}
+
+application {
+    mainClass.set("grouph.Main")
 }
 
 group = "grouph"
