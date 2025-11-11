@@ -4,6 +4,8 @@ package grouph;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        System.out.println("hello from client");
+        System.out.println("hello from client!!");
+        Client c = new Client();//make client obj to access its behaviours
+        c.start();
     }
 }
