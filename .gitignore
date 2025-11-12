@@ -12,6 +12,8 @@ certs/
 *.csr
 *.srl
 
+
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -54,3 +56,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+
+
+stores/
+!stores/
+!stores/client-truststore.jks
+stores/keystorePass.txt
