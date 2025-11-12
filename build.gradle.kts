@@ -30,7 +30,24 @@ tasks.test {
 }
 
 tasks.named("run") {
+    dependsOn("obtainClientCert")
+}
+
+
+val obtainClientCert by tasks.registering(JavaExec::class) {
+    group = "certs"
+
+    mainClass.set("grouph.clientCertificateManager")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    // Ensure keystore exists first
     dependsOn("makeClientKeystore")
+
+    // Optional: only run if no leaf cert yet (tweak the condition as you prefer)
+    onlyIf {
+        // Example: run if certs/client.crt is missing
+        !file("stores/client.crt").exists()
+    }
 }
 
 

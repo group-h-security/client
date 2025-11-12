@@ -26,13 +26,13 @@ import java.nio.charset.StandardCharsets;
 
 public class clientCertificateManager {//handle certs and stores
 
-    private static final String certificatesDirectory = "client/certs";//pointer to certs directory
-    private static final String storesDirectory = "client/stores";//pointer to certs directory
+    private static final String certificatesDirectory = "certs";//pointer to certs directory
+    private static final String storesDirectory = "stores";//pointer to certs directory
     private static final String pass;
 
     static {
         try {
-            pass = Files.readString(Path.of("client/stores/keystorePass.txt"), StandardCharsets.UTF_8).trim();
+            pass = Files.readString(Path.of("stores/keystorePass.txt"), StandardCharsets.UTF_8).trim();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -41,13 +41,13 @@ public class clientCertificateManager {//handle certs and stores
     public void start() throws Exception {
 
 
-
-        File outDir = new File("client");
-        outDir.mkdirs();
+        Path certsDir = Paths.get("certs");
+        Files.createDirectories(certsDir);
         String csrPEM = generateCsr();
-        Path csrPath = Path.of(outDir.getAbsolutePath(), "/certs/client.csr");
+        Path csrPath = certsDir.resolve("client.csr");
+
         Files.writeString(csrPath, csrPEM);
-        System.out.println("CSR Generated at "+new File(outDir, "/certs/client.csr").getAbsolutePath());
+        System.out.println("CSR Generated at "+new File("/certs/client.csr").getAbsolutePath());
 
         //declare paths to make life easier
         Path clientPrivateKeyFile = Paths.get(storesDirectory, "client-key.pem");
@@ -199,8 +199,8 @@ public class clientCertificateManager {//handle certs and stores
     public static String generateCsr() throws Exception {
         // Dealing with all the files and dirs
         System.out.println("PWD = " + System.getProperty("user.dir"));
-        Path passPath = Path.of("client/stores/keystorePass.txt");
-        Path jksPath  = Path.of("client/stores/client-keystore.jks");
+        Path passPath = Path.of("stores/keystorePass.txt");
+        Path jksPath  = Path.of("stores/client-keystore.jks");
         if (!Files.exists(passPath)) throw new FileNotFoundException(passPath + " not found");
         if (!Files.exists(jksPath))  throw new FileNotFoundException(jksPath  + " not found");
 
