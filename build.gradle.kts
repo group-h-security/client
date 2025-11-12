@@ -1,6 +1,9 @@
+
+
 plugins {
     java
     application
+    id("grouph.make-client-keystore")
 }
 
 application {
@@ -26,6 +29,16 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.register("temp") {
-
+tasks.named("run") {
+    dependsOn("makeClientKeystore")
 }
+
+
+
+
+
+
+
+
+
+
