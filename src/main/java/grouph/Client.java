@@ -95,7 +95,7 @@ public class Client {
                 } else if (command.startsWith("/help")) {
                     System.out.printf("");
 
-                System.out.println(Username +": " +message);
+                System.out.println(Username +": " +command);
 
                 //nested while so they can leave the room and do something else
                     boolean inChat = true;
