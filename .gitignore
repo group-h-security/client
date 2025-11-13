@@ -3,7 +3,6 @@ gradle/
 .gradle/
 .idea/
 
-certs/
 *.jks
 *.pem
 *.p12

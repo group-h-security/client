@@ -195,6 +195,7 @@ public class Client {
         String systemIp = System.getProperty("server.ip.address"); // for ryans deployed server
         if (systemIp != null && !systemIp.isEmpty()) {
             HOST = systemIp;
+            System.out.printf("using server ip: %s%n", systemIp);
         } else {
             HOST = "localhost"; // localhost if we didnt set that system prop
             System.err.println("ip address system prop not found, defaulting to localhost.");

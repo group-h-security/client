@@ -118,7 +118,12 @@ public class CertificateManager { // handle certs and stores
         }
 
         String boundary = "----Boundary" + System.currentTimeMillis();
-        URI flaskServURI = new URI("http://127.0.0.1:5000/sign");
+        String serverIp = System.getProperty("server.ip.address");
+        if (serverIp == null || serverIp.isEmpty()) {
+            serverIp = "127.0.0.1"; // fallback
+        }
+
+        URI flaskServURI = new URI("http://" + serverIp + ":5000/sign");
         HttpURLConnection flaskServConn = (HttpURLConnection) flaskServURI.toURL().openConnection();
 
         flaskServConn.setDoOutput(true);
