@@ -2,6 +2,7 @@ package grouph.cert
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 import java.io.FileOutputStream
 import java.math.BigInteger
 import java.security.*
@@ -15,15 +16,36 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 
 class MakeClientKeystorePlugin : Plugin<Project> {
+
+    // everything we make should not sit in root of the project but sit in corresponding data section of the os
+    // %APPDATA% for windows, Application Support for macos etc.
+    private fun getDataPath(fileName: String): String {
+        val os = System.getProperty("os.name").lowercase()
+        val basePath: String = when {
+            "win" in os -> {
+                val appData = System.getenv("APPDATA")
+                appData ?: System.getProperty("user.home")
+            }
+            "mac" in os -> System.getProperty("user.home") + "/Library/Application Support"
+            else -> System.getProperty("user.home") + "/.local/share"
+        }
+
+        val dir = File(basePath, "grouph")
+        if (!dir.exists()) dir.mkdirs()
+
+        // ensure certs and stores subdirectories exist under the same data path
+        val certsDir = File(dir, "certs")
+        if (!certsDir.exists()) certsDir.mkdirs()
+
+        return File(dir, fileName).absolutePath
+    }
+
     override fun apply(project: Project) {
         project.tasks.register("makeClientKeystore") {
             group = "certs"
             doLast {
-                val storesDir = project.file("stores")
-                storesDir.mkdirs()
-
                 val password = Base64.getEncoder().encodeToString(SecureRandom().generateSeed(24))
-                project.file("stores/keystorePass.txt").writeText(password)
+                File(getDataPath("certs/keystorePass.txt")).writeText(password)
 
                 if (Security.getProvider("BC") == null) {
                     Security.addProvider(BouncyCastleProvider())
@@ -39,8 +61,8 @@ class MakeClientKeystorePlugin : Plugin<Project> {
                     appendLine(Base64.getMimeEncoder(64, "\n".toByteArray()).encodeToString(privateKeyBytes))
                     appendLine("-----END PRIVATE KEY-----")
                 }
-                project.file("stores/client-key.pem").writeText(privateKeyPem)
-                println("✓ Private key written to stores/client-key.pem")
+                File(getDataPath("certs/client-key.pem")).writeText(privateKeyPem)
+                println("✓ Private key written to ${getDataPath("certs/client-key.pem")}")
 
                 val now = Date()
                 val until = Date(now.time + 24L * 60 * 60 * 1000)
@@ -56,11 +78,11 @@ class MakeClientKeystorePlugin : Plugin<Project> {
                 val ks = KeyStore.getInstance("JKS")
                 ks.load(null, password.toCharArray())
                 ks.setKeyEntry("client", keyPair.private, password.toCharArray(), arrayOf(cert))
-                FileOutputStream(project.file("stores/client-keystore.jks")).use {
+                FileOutputStream(File(getDataPath("certs/client-keystore.jks"))).use {
                     ks.store(it, password.toCharArray())
                 }
 
-                println("✓ Client keystore created (stores/client-keystore.jks)")
+                println("✓ Client keystore created (${getDataPath("certs/client-keystore.jks")})")
             }
         }
     }
