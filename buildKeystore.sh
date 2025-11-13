@@ -28,6 +28,6 @@ echo "✓ Client keystore created (client-keystore.jks)"
 rm -f stores/client-keystore.p12
 
 ## Only need to run once - can persist on github,
-keytool -import -file stores/rootCert.crt -alias CARoot -keystore stores/client-truststore.jks \
+keytool -import -file stores/rootCert.crt -alias CARoot -keystore stores/server-truststore.jks \
  -storepass changeit -noprompt
 echo "✓ Client truststore created (client-truststore.jks)"
