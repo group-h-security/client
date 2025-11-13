@@ -66,19 +66,24 @@ val obtainClientCert by tasks.registering(JavaExec::class) {
     mainClass.set("grouph.CertificateManager")
     classpath = sourceSets["main"].runtimeClasspath
 
-    onlyIf {
-        val certsDir = file(getDataPath("certs"))
-        val ksPath = file(getDataPath("certs/client-keystore.jks"))
-        val tsPath = file(getDataPath("client-truststore.jks"))
-
-        val missing = !(certsDir.exists() && ksPath.exists() && tsPath.exists())
-        if (!missing) println("all certs exist")
-        missing
+    // makeClientKeystore is only added if the files are missing
+    if (!clientCertsExist()) {
+        dependsOn("makeClientKeystore")
     }
-
-    dependsOn("makeClientKeystore")
 }
 
+// helper used by both tasks
+fun clientCertsExist(): Boolean {
+    val certsDir = file(getDataPath("certs"))
+    val ksPath = file(getDataPath("certs/client-keystore.jks"))
+    val tsPath = file(getDataPath("client-truststore.jks"))
+    return certsDir.exists() && ksPath.exists() && tsPath.exists()
+}
+
+// makeClientKeystore itself should also skip if files exist
+tasks.named("makeClientKeystore") {
+    onlyIf { !clientCertsExist() }
+}
 
 
 
