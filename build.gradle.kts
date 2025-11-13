@@ -1,4 +1,5 @@
-
+import java.net.Socket
+import org.gradle.api.tasks.JavaExec
 
 plugins {
     java
@@ -30,6 +31,7 @@ tasks.test {
 }
 
 tasks.named("run") {
+
     dependsOn("obtainClientCert")
 }
 
@@ -49,6 +51,10 @@ val obtainClientCert by tasks.registering(JavaExec::class) {
         !file("stores/client.crt").exists()
     }
 }
+
+
+
+
 
 
 
