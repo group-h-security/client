@@ -1,13 +1,15 @@
-package grouphtest;
+package grouph;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import org.junit.jupiter.api.Test;
 import java.net.URL;
 
 public class clientTest {
 
+   @Test
      private boolean httpConnectTest() {//test method for flask server
             try {
 
@@ -34,11 +36,12 @@ public class clientTest {
             return false;// failed conn
         }
 
+        @Test
         private void testServerConn(){
 
 
         }
-
+        @Test
         private void testMessageHandling(){
 
         }
