@@ -1,37 +1,25 @@
-##testing permission ignore this line
-gradle/
+# Gradle
 .gradle/
-.idea/
-
-*.jks
-*.pem
-*.p12
-*.crt
-*.key
-*.csr
-*.srl
-
-
-
-.gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+# IDEs
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+.vscode/
 
-### Eclipse ###
+# IntelliJ specific
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+
+# Eclipse specific
 .apt_generated
 .classpath
 .factorypath
@@ -43,22 +31,30 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### NetBeans ###
+# NetBeans specific
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+# OS
 .DS_Store
 
+# Certificates and keys
+*.jks
+*.pem
+*.p12
+*.crt
+*.key
+*.csr
+*.srl
 
-
+# Stores directory
 stores/
 !stores/
 !stores/client-truststore.jks
+# ignore other sensitive keystore or pass files
+stores/*.jks
 stores/keystorePass.txt
+
