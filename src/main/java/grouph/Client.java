@@ -228,6 +228,7 @@ public class Client {
 
         SSLSocketFactory factory = sslContext.getSocketFactory();
         socket = (SSLSocket) factory.createSocket(HOST, PORT);
+        socket.setEnabledProtocols(new String[] { "TLSv1.3" });
         socket.startHandshake();
 
         // get the output stream of the socket
