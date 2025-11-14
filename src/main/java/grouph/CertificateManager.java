@@ -9,8 +9,12 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.net.*;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.security.cert.X509Certificate;
@@ -117,9 +121,10 @@ public class CertificateManager { // handle certs and stores
             serverIp = "127.0.0.1"; // fallback
         }
 
-        URI flaskServURI = new URI("http://" + serverIp + ":5000/sign");
-        HttpURLConnection flaskServConn = (HttpURLConnection) flaskServURI.toURL().openConnection();
-
+        URI flaskServURI = new URI("https://" + serverIp + ":5000/sign");
+        HttpsURLConnection flaskServConn = (HttpsURLConnection) flaskServURI.toURL().openConnection();
+        SSLContext ctx = buildSSLContext(tsPath, "changeit");
+        flaskServConn.setSSLSocketFactory(ctx.getSocketFactory());
         flaskServConn.setDoOutput(true);
         flaskServConn.setRequestMethod("POST");
         flaskServConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -153,10 +158,35 @@ public class CertificateManager { // handle certs and stores
             String clientPem = pemPK.substring(0, splitIndex);
             String intermediatePem = pemPK.substring(splitIndex).trim();
 
+            System.out.println(clientPem);
+            System.out.println(intermediatePem);
+
             Files.writeString(Paths.get(DataManager.getDataPath("client.crt")), clientPem, StandardCharsets.UTF_8);
             Files.writeString(Paths.get(DataManager.getDataPath("intermediate.crt")), intermediatePem, StandardCharsets.UTF_8);
         }
 
+    }
+
+    private static SSLContext buildSSLContext(Path truststorePath, String password) throws KeyStoreException, NoSuchAlgorithmException {
+        char[] pass = password.toCharArray();
+        try {
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            try (InputStream in = Files.newInputStream(truststorePath)) {
+                trustStore.load(in, pass);
+            } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+
+            return sslContext;
+        } catch (KeyManagementException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void updateCerts() throws Exception {
@@ -190,13 +220,13 @@ public class CertificateManager { // handle certs and stores
         }
 
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(null, null);
+        trustStore.load(null, "changeit".toCharArray());
         trustStore.setCertificateEntry("rootCA", rootCert);
 
         // truststore goes in data path
         Path trustPath = Paths.get(DataManager.getDataPath("client-truststore.jks"));
         try (OutputStream out = Files.newOutputStream(trustPath)) {
-            trustStore.store(out, pass.toCharArray());
+            trustStore.store(out, "changeit".toCharArray());
         }
     }
 

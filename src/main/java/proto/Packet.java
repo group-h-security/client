@@ -59,6 +59,11 @@ public class Packet {
         return buf.array();
     }
 
+    public byte[] getBytes(int type) {
+        for (Tlv t : tlvs) if (t.type == type) return t.value;
+        return null;
+    }
+
     // decoding, should return a nice Packet class
     public static Packet read(InputStream inputStream) throws IOException {
         // read header into byte array
