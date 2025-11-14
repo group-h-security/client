@@ -192,7 +192,7 @@ public class Client {
         final String PASSWORD_FILE     = DataManager.getDataPath("certs/keystorePass.txt");
 
         String HOST;
-        String systemIp = System.getProperty("server.ip.address"); // for ryans deployed server
+        String systemIp = System.getProperty("157.245.40.243"); // for ryans deployed server
         if (systemIp != null && !systemIp.isEmpty()) {
             HOST = systemIp;
             System.out.printf("using server ip: %s%n", systemIp);
