@@ -54,6 +54,8 @@ public class CertificateManager { // handle certs and stores
         Path clientCrtFile = Paths.get(DataManager.getDataPath("client.crt"));
         Path intermediateCrtFile = Paths.get(DataManager.getDataPath("intermediate.crt"));
 
+        importCATruststore();
+
         // Attempt to obtain signed client certificate the same way the CertHandler would: if a signed cert
         // already exists in the stores directory use it, otherwise request it from the CA server
         if (!Files.exists(clientCrtFile)) {
@@ -103,19 +105,11 @@ public class CertificateManager { // handle certs and stores
             clientKeyStore.store(out, pass.toCharArray());
         }
 
-        // import CA root into a truststore
-        importCATruststore();
     }
 
     private static void requestClientCert(Path clientCsrFile) throws Exception {
-        Path ksPath = Paths.get(DataManager.getDataPath("client-keystore.jks"));
+        Path ksPath = Paths.get(DataManager.getDataPath("certs/client-keystore.jks"));
         Path tsPath = Paths.get(DataManager.getDataPath("client-truststore.jks"));
-
-        // ks and ts already exist so skip
-        if (Files.exists(ksPath) && Files.exists(tsPath)) {
-            System.out.println("[Keystore and truststore already exist, skipping certificate request]");
-            return;
-        }
 
         String boundary = "----Boundary" + System.currentTimeMillis();
         String serverIp = System.getProperty("server.ip.address");
@@ -163,8 +157,6 @@ public class CertificateManager { // handle certs and stores
             Files.writeString(Paths.get(DataManager.getDataPath("intermediate.crt")), intermediatePem, StandardCharsets.UTF_8);
         }
 
-        // import root into truststore
-        importCATruststore();
     }
 
     public static void updateCerts() throws Exception {
@@ -178,7 +170,7 @@ public class CertificateManager { // handle certs and stores
         Path csrPath = Paths.get(DataManager.getDataPath("client.csr"));
         Files.writeString(csrPath, csrPEM, StandardCharsets.UTF_8);
 
-        // request certificates again
+        importCATruststore();
         requestClientCert(csrPath);
     }
 
