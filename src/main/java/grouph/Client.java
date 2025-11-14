@@ -67,7 +67,7 @@ public class Client {
                     CertificateManager.updateCerts();
                     initConnection();
                 } catch (Exception ex) {
-                    System.err.println("retry after updating certs failed" + ex.getMessage());
+                    System.err.println("retry after updating certs failed - " + ex.getMessage());
                     System.exit(1);
                 }
             }
@@ -218,7 +218,7 @@ public class Client {
 
         KeyStore trustStore = KeyStore.getInstance("JKS");
         try (FileInputStream fis = new FileInputStream(CLIENT_TRUSTSTORE)) {
-            trustStore.load(fis, password.toCharArray());
+            trustStore.load(fis, "changeit".toCharArray());
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(trustStore);
